@@ -5,10 +5,11 @@ FROM python:3.9-slim
 WORKDIR /sistema_usuarios
 
 # Copiar los archivos del backend
-COPY ./backend/back/requirements.txt/sistema_usuarios/
+COPY ./backend/back/requirements.txt /sistema_usuarios/
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY ./backend/back/sistema_usuarios/
+COPY ./backend/back /sistema_usuarios/
 
 # Configurar variables de entorno para Django (si es necesario)
 ENV DJANGO_SETTINGS_MODULE=app.settings
