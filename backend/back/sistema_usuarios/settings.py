@@ -89,11 +89,15 @@ WSGI_APPLICATION = 'sistema_usuarios.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'fragaria',  
+        'NAME': 'railway',  
         'USER': 'root',         
-        'PASSWORD': '',  
-        'HOST': 'localhost',         
+        'PASSWORD': 'obyphXQHIRRcaOFOmoXiDTxuVFusYLcd',  
+        'HOST': 'mysql.railway.internal',         
         'PORT': '3306', 
+         'OPTIONS': {
+            'charset': 'utf8mb4',
+            'use_unicode': True,
+        },
     }
 }
 
