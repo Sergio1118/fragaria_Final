@@ -18,7 +18,11 @@ from django.contrib import admin
 from django.urls import path
 from usuarios import views as usuarios_views
 from django.contrib.auth import views as auth_views
-from usuarios.views import  obtener_csrf_token, password_reset_api, iniciar_sesion, agregar_usuario, registro,perfil,logout_view,reset_password, obtener_fechas_recomendadas, registrar_plantacion, plantacion, editar_plantacion,asignar_actividad,gestion_usuarios,actividades_de_usuario,marcar_completo,actividades_admin
+from usuarios.views import ( obtener_csrf_token, password_reset_api, iniciar_sesion, agregar_usuario,
+                            registro,perfil,logout_view,reset_password, obtener_fechas_recomendadas, 
+                            registrar_plantacion, plantacion, editar_plantacion,asignar_actividad,
+                            gestion_usuarios,actividades_de_usuario,marcar_completo,actividades_admin)
+
 from usuarios.views import editar_actividad,eliminar_actividad, vista_clima,descargar_informes_pdf
 
 urlpatterns = [
@@ -72,8 +76,13 @@ urlpatterns = [
     path("descargar_informes_pdf/", descargar_informes_pdf, name="descargar_informes_pdf"),
     path('eliminar_informe/<int:id>/', usuarios_views.eliminar_informe, name='eliminar_informe'),
     
-
-
+    
+    #Apartado de IA
+    
+    path("contar_plantacion/", usuarios_views.count_plantaciones, name = 'contar_plantacion'),
+    path("contar_empleados/", usuarios_views.count_empleados, name= 'contar_empleados'),
+    path('contar_informes/', usuarios_views.contar_informes, name='contar_informes'),
+    path('contar_actividades_empleado/', usuarios_views.contar_actividades_empleado, name='contar_actividades_empleado'),
 ]
 
 

@@ -12,26 +12,21 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 import os
-import pymysql
-pymysql.install_as_MySQLdb()
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
+
+
+
 SECRET_KEY = 'django-insecure-k=-_mxvf)+lajv*ac49aqa!vgwuij+i415syef2_ea*%ik*)jx'
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
 
-# Application definition
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -63,8 +58,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],  # Si estás usando plantillas globales en una carpeta común
-        'APP_DIRS': True,  # Esto permite buscar plantillas dentro de las aplicaciones
+        'DIRS': [os.path.join(BASE_DIR, 'templates')], 
+        'APP_DIRS': True, 
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -77,7 +72,7 @@ TEMPLATES = [
 ]
 
 
-
+LOGIN_URL = '/login/'
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
 
@@ -91,15 +86,11 @@ WSGI_APPLICATION = 'sistema_usuarios.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'railway',  
+        'NAME': 'fragaria',  
         'USER': 'root',         
-        'PASSWORD': 'obyphXQHIRRcaOFOmoXiDTxuVFusYLcd',  
-        'HOST': 'mysql.railway.internal',         
+        'PASSWORD': '',  
+        'HOST': 'localhost',         
         'PORT': '3306', 
-         'OPTIONS': {
-            'charset': 'utf8mb4',
-            'use_unicode': True,
-        },
     }
 }
 

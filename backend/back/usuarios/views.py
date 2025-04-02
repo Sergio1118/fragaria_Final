@@ -42,6 +42,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils.timezone import now, timedelta
 import locale
 
+
+
 logger = logging.getLogger(__name__)
 
 @ensure_csrf_cookie
@@ -1007,3 +1009,136 @@ def vista_clima(request):
         return JsonResponse({"clima": resultado}, status=200)
 
 
+# Apartados de la IA 
+
+
+@login_required
+def count_plantaciones(request):
+    if request.method == 'GET':
+        try:
+          
+            conteo = Plantacion.objects.filter(usuario=request.user).count()
+            
+            return JsonResponse({
+                'status': 200,
+                'success': True,
+                'conteo': conteo
+            }, status=200)
+            
+        except Exception as e:
+            logger.error(f"Error en count_plantaciones: {str(e)}")
+            return JsonResponse({
+                'status': 500,
+                'success': False,
+                'message': 'Error al contar las plantaciones',
+                'error': str(e)
+            }, status=500)
+            
+    return JsonResponse({
+        'status': 405,
+        'success': False,
+        'message': 'Método no permitido'
+    }, status=405)
+ 
+ 
+logger = logging.getLogger(__name__)
+
+@csrf_exempt  # Solo si necesitas permitir peticiones sin CSRF
+@login_required
+def count_empleados(request):
+    if not (request.user.is_superuser or request.user.is_staff):
+        return JsonResponse({"error": "No tienes permisos suficientes"}, status=403)
+    
+    if request.method == 'GET':
+        try:
+            conteo = Usuario.objects.filter(admin_creator=request.user).count()
+            return JsonResponse({"conteo": conteo}, status=200)
+        except Exception as e:
+            logger.error(f"Error contando empleados: {str(e)}")
+            return JsonResponse({"error": "Error del servidor"}, status=500)
+    
+    return JsonResponse({"error": "Método no permitido"}, status=405)
+
+
+
+@login_required
+@csrf_exempt
+def contar_informes(request):
+    if request.method != "GET":
+        return JsonResponse({"status": "error", "message": "Método no permitido."}, status=405)
+
+    try:
+        # Obtener IDs de empleados creados por el usuario actual
+        empleados_ids = list(Usuario.objects.filter(admin_creator=request.user).values_list("id", flat=True))
+
+        # Si no hay empleados, devolver conteo 0 en lugar de error
+        if not empleados_ids:
+            return JsonResponse({ "conteo": 0}, status=200)
+
+        # Contar informes (actividades completadas) de los empleados
+        conteo = Actividad.objects.filter(usuario_id__in=empleados_ids, estado="completada").count()
+
+        return JsonResponse({ "conteo": conteo}, status=200)
+
+    except Exception as e:
+        logger.error(f"Error en contar_informes: {str(e)}")
+        return JsonResponse({"message": "Ocurrió un error inesperado."}, status=500)
+    
+    
+    
+@csrf_exempt
+@login_required
+def contar_actividades_empleado(request):
+    if request.method != "GET":
+        return JsonResponse({"status": "error", "message": "Método no permitido."}, status=405)
+
+    nombre_completo = request.GET.get("nombre", "").lower().strip()
+
+    if not nombre_completo:
+        return JsonResponse({"status": "error", "message": "Debes proporcionar el nombre de un empleado."}, status=400)
+
+    try:
+        from django.db.models import Q
+        
+        partes_nombre = nombre_completo.split()
+        
+        empleados = Usuario.objects.filter(admin_creator=request.user)
+        
+        if len(partes_nombre) >= 2:
+            empleados = empleados.filter(
+                Q(first_name__icontains=partes_nombre[0]) &
+                Q(last_name__icontains=partes_nombre[1])
+            )
+        else:
+            empleados = empleados.filter(
+                Q(first_name__icontains=partes_nombre[0]) |
+                Q(last_name__icontains=partes_nombre[0])
+            )
+
+        if not empleados.exists():
+            return JsonResponse(
+                {"status": "error", "message": f"No se encontró al empleado {nombre_completo}."}, 
+                status=404
+            )
+
+        empleado = empleados.first()
+        actividades = Actividad.objects.filter(usuario=empleado)
+
+        conteo = {
+            "total": actividades.count(),
+            "pendientes": actividades.filter(estado="pendiente").count(),
+            "completadas": actividades.filter(estado="completada").count(),
+            "incompletas": actividades.filter(estado="incompleta").count(),
+        }
+
+        return JsonResponse({
+            "status": "success",
+            "empleado": f"{empleado.first_name} {empleado.last_name}",
+            "conteo": conteo
+        }, status=200)
+
+    except Exception as e:
+        logger.error(f"Error en contar_actividades_empleado: {str(e)}")
+        return JsonResponse({"status": "error", "message": "Ocurrió un error inesperado."}, status=500)
+    
+    
