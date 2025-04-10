@@ -48,11 +48,11 @@ function Informes() {
         if (data?.actividades && Array.isArray(data.actividades)) {
           // Agrupar actividades por trabajador
           const grouped = data.actividades.reduce((acc, actividad) => {
-            const key = actividad.usuario__first_name;
+            const key = actividad.usuario__first_name + " " + actividad.usuario__last_name;;
             if (!acc[key]) {
               acc[key] = {
-                id: actividad.id, // Puedes usar el primer ID o generar uno único
-                usuario: actividad.usuario__first_name,
+                id: actividad.id,
+                usuario: key, // Guardamos nombre completo
                 actividades: []
               };
             }

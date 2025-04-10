@@ -43,7 +43,7 @@ function Actividad_admin() {
           ...act,
           fecha: act.fecha.split(" ")[0], // Extraer solo la fecha (YYYY-MM-DD)
           fecha_vencimiento: act.fecha_vencimiento.split(" ")[0] || "", // Extraer fecha de vencimiento si existe
-          usuario_nombre: act.usuario?.nombre || "Usuario desconocido", // Extraer el nombre del usuario
+          usuario_nombre: `${act.first_name} ${act.last_name}`, 
         }));
 
         setActividades(actividadesTransformadas);
@@ -177,7 +177,7 @@ function Actividad_admin() {
                       <div key={act.id} className="card shadow-sm mb-3" style={{ border: `2px solid ${estadoInfo[estado].borde}` }}>
                         <div className="card-body text-center">
                           <h6 className="fw-bold text-dark">{act.nombre_actividad}</h6>
-                          <p className="text-muted">👤 Usuario: {act.first_name}</p>
+                          <p className="text-muted">👤 Usuario: {act.usuario_nombre}</p>
                           <p className="text-muted">🌱  plantacion: {act.nombre_plantacion}</p>
 
                           {editando === act.id ? (

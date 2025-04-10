@@ -197,7 +197,7 @@ const RegistroActividades = ({ onActividadAgregada }) => {
                       {usuarios.length > 0 ? (
                         usuarios.map((user, index) => (
                           <option key={index} value={user.id}>
-                            {user.first_name}
+                            {user.first_name}  {user.last_name}
                           </option>
                         ))
                       ) : (

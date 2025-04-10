@@ -642,7 +642,7 @@ def asignar_actividad(request):
 @login_required
 def actividades_admin(request):
     if request.method == "GET":
-        usuarios = Usuario.objects.filter(admin_creator=request.user).values("id", "first_name")
+        usuarios = Usuario.objects.filter(admin_creator=request.user).values("id", "first_name","last_name")
 
         actividades_resultado = []
 
@@ -654,7 +654,8 @@ def actividades_admin(request):
 
                 actividad_data = {
                     "id": actividad.id,
-                    "first_name": user["first_name"],  
+                    "first_name": user["first_name"], 
+                    "last_name": user["last_name"], 
                     "nombre_actividad": actividad.nombre_actividad,
                     "descripcion": actividad.descripcion,
                     "tiempo_estimado": str(actividad.tiempo_estimado),
@@ -796,11 +797,10 @@ def informes(request):
         actividades = actividades.filter(id=actividad_id)
 
     actividades = actividades.values(
-        "id", "nombre_actividad", "descripcion", "usuario_id", "usuario__first_name", "fecha", "fecha_vencimiento", "estado", "plantacion__nombre"
+        "id", "nombre_actividad", "descripcion", "usuario_id", "usuario__first_name","usuario__last_name", "fecha", "fecha_vencimiento", "estado", "plantacion__nombre"
     )
     print("Empleados encontrados:", list(empleados_ids))
     return JsonResponse ({"status": "success", "actividades": list(actividades)}, status=200)
-
 
 
 
@@ -826,14 +826,14 @@ def descargar_informes_pdf(request):
         fecha__month=fecha_actual.month
     ).select_related("plantacion").values(
         "id", "nombre_actividad", "descripcion", 
-        "usuario__first_name", "fecha", "estado", 
+        "usuario__first_name", "usuario__last_name", "fecha", "estado", 
         "plantacion__nombre"
     )
 
     if not actividades:
         return JsonResponse({"error": "No hay informes de este mes."}, status=400)
 
-    # 📄 Generar PDF
+    # 📝 Generar PDF
     response = HttpResponse(content_type="application/pdf")
     response["Content-Disposition"] = 'attachment; filename="informes_trabajadores.pdf"'
 
@@ -858,15 +858,16 @@ def descargar_informes_pdf(request):
     # 📋 Tabla de datos
     data = [["👤 Trabajador", "📌 Actividad", "📅 Fecha", "✅ Estado", "🌱 Plantación"]]
     for actividad in actividades:
+        trabajador = f"{actividad['usuario__first_name']} {actividad['usuario__last_name']}"
         data.append([
-            actividad["usuario__first_name"],
+            trabajador,
             actividad["nombre_actividad"],
             actividad["fecha"].strftime("%d-%m-%Y"),
             actividad["estado"],
             actividad["plantacion__nombre"]
         ])
 
-    table = Table(data, colWidths=[120, 140, 80, 80, 110])
+    table = Table(data, colWidths=[150, 140, 80, 80, 110])
     table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#FFD6B3")),
         ("TEXTCOLOR", (0, 0), (-1, 0), colors.HexColor("#6D4C41")),

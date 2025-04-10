@@ -36,7 +36,7 @@ const Calendario_admin = () => {
 
       if (Array.isArray(data.actividades)) {
         const actividadesTransformadas = data.actividades.map((act) => ({
-          first_name: act.first_name,  // Nombre del trabajador
+          usuario_nombre: `${act.first_name} ${act.last_name}`, 
           fecha: act.fecha.split(" ")[0], // Fecha sin hora
           estado: act.estado,
           nombre_actividad: act.nombre_actividad || "Sin nombre", // Prevención de undefined
@@ -181,7 +181,7 @@ const Calendario_admin = () => {
                               <br />
                               📅 Fecha :{esPlantacion ? item.start : item.fecha} <br />
                               🌱 Plantación: <strong>{item.nombre_plantacion}</strong><br />
-                              <span>👷 Trabajador: <strong>{item.first_name}</strong></span> <br />
+                              <span>👷 Trabajador: <strong>{item.usuario_nombre}</strong></span> <br />
                             </>
                           )}
                           <hr className="my-3 border-dark" />

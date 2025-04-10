@@ -326,6 +326,7 @@ function Navbaradmin() {
       color: "white",
       fontSize: "14px",
       boxShadow: "0 2px 5px rgba(0,0,0,0.2)",
+      zIndex: 2000,
     }
   };
 
